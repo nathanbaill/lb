@@ -1,5 +1,5 @@
 workflows:
-  test:
-    name: Codemagic test
+  ios-build:
+    name: "Simple iOS Build"
     scripts:
-      - echo "Codemagic YAML detected successfully!"
+      - echo "Codemagic YAML is now detected!"
