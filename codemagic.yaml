@@ -1,0 +1,28 @@
+workflows:
+  ios-build:
+    name: "iOS Build for Loving Bicycling"
+    environment:
+      vars:
+        APP_ID: "com.lovingbicycling.app"
+      flutter: "stable"
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Install dependencies
+        script: |
+          npm install
+          npm install -g @ionic/cli
+          npm install -g @capacitor/cli
+          ionic build
+          npx cap sync ios
+      - name: Build iOS app
+        script: |
+          xcodebuild -workspace ios/App/App.xcworkspace -scheme App -sdk iphoneos -configuration Release archive -archivePath $CM_BUILD_DIR/App.xcarchive
+      - name: Export IPA
+        script: |
+          xcodebuild -exportArchive -archivePath $CM_BUILD_DIR/App.xcarchive -exportOptionsPlist ios/App/ExportOptions.plist -exportPath $CM_BUILD_DIR/build/ios
+    artifacts:
+      - build/ios/*.ipa
+    publishing:
+      app_store_connect:
+        api_key: Encrypted(...) # À configurer dans Codemagic UI
