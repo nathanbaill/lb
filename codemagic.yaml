@@ -1,7 +1,5 @@
 workflows:
-  ios-build:
-    name: "iOS Build"
-    environment:
-      xcode: latest
+  test:
+    name: Codemagic test
     scripts:
-      - echo "Codemagic YAML is working!"
+      - echo "Codemagic YAML detected successfully!"
