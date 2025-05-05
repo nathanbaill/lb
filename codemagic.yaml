@@ -2,34 +2,25 @@ workflows:
   ios-build:
     name: "iOS Build for Loving Bicycling"
     environment:
-      flutter: stable
-      xcode: latest
-      cocoapods: default
       vars:
         APP_ID: "com.lovingbicycling.app"
+      flutter: "stable"
+      xcode: latest
+      cocoapods: default
     scripts:
       - name: Install dependencies
         script: |
           npm install
           npm install -g @ionic/cli
           npm install -g @capacitor/cli
-      - name: Build the Ionic app
-        script: |
           ionic build
           npx cap sync ios
       - name: Build iOS app with Xcode
         script: |
-          xcodebuild -workspace ios/App/App.xcworkspace \
-            -scheme App \
-            -sdk iphoneos \
-            -configuration Release \
-            archive \
-            -archivePath $CM_BUILD_DIR/App.xcarchive
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace -scheme App -sdk iphoneos -configuration Release archive -archivePath $CM_BUILD_DIR/App.xcarchive
       - name: Export IPA
         script: |
-          xcodebuild -exportArchive \
-            -archivePath $CM_BUILD_DIR/App.xcarchive \
-            -exportOptionsPlist ios/App/ExportOptions.plist \
-            -exportPath $CM_BUILD_DIR/build/ios
+          xcodebuild -exportArchive -archivePath $CM_BUILD_DIR/App.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath $CM_BUILD_DIR/build/ios
     artifacts:
       - build/ios/*.ipa
