@@ -1,0 +1,10 @@
+{
+	"appId": "com.lovingbicycling.app",
+	"appName": "LovingBicycling",
+	"webDir": "www",
+	"server": {
+		"url": "https://lovingbicycling.com",
+		"cleartext": true
+	},
+	"packageClassList": []
+}
