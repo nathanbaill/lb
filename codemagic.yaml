@@ -19,9 +19,13 @@ workflows:
         script: |
           cd ios/App
           pod install
-          xcodebuild -workspace App.xcworkspace -scheme App -sdk iphoneos -configuration Release archive -archivePath $CM_BUILD_DIR/App.xcarchive
+          xcodebuild -workspace App.xcworkspace -scheme App -sdk iphoneos -configuration Release archive -archivePath $CM_BUILD_DIR/App.xcarchive -allowProvisioningUpdates
       - name: Export IPA
         script: |
           xcodebuild -exportArchive -archivePath $CM_BUILD_DIR/App.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath $CM_BUILD_DIR/build/ios
     artifacts:
       - build/ios/*.ipa
+    publishing:
+      app_store_connect:
+        credentials: apple_developer_credentials # défini automatiquement via l'intégration
+        submit_to_testflight: false  # optionnel
