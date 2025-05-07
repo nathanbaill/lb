@@ -1,35 +1,58 @@
-format_version: "11"
+---
+format_version: '11'
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
-
 project_type: ios
 
 workflows:
-  primary:
+  build:
+    summary: "Builds and deploys the iOS app using API key authentication."
     steps:
-      - git-clone: {}
-      - cache-pull: {}
-      - script:
-          title: Install CocoaPods
-          inputs:
-            - content: |
-                #!/bin/bash
-                set -ex
-                cd ios/App
-                pod install
-      - certificate-and-profile-installer: {}
-      - xcode-archive:
-          inputs:
-            - project_path: ios/App/App.xcworkspace
-            - scheme: App
-            - export_method: app-store
-            - configuration: Release
-      - deploy-to-bitrise-io: {}
-      - deploy-to-itunesconnect-application-loader:
-          inputs:
-            - app_password: "$APPLE_PWD"
-            - apple_id: "$APPLE_LOGIN"
-            - ipa_path: "$BITRISE_IPA_PATH"
-    envs:
-      - BITRISE_PROJECT_PATH: ios/App/App.xcworkspace
-      - BITRISE_SCHEME: App
-      - BITRISE_EXPORT_METHOD: app-store
+    - git-clone@8: {}
+
+    - restore-cocoapods-cache@1: {}
+
+    - cocoapods-install@2:
+        inputs:
+        - is_cache_disabled: "true"
+
+    - save-cocoapods-cache@1: {}
+
+    - certificate-and-profile-installer@1:
+        inputs:
+        - certificate_url: "$BITRISE_CERTIFICATE_URL"
+        - certificate_passphrase: "$BITRISE_CERTIFICATE_PASS"
+        - provisioning_profile_url: "$BITRISE_PROVISION_URL"
+        - install_defaults: "no"
+
+    - xcode-archive@5:
+        inputs:
+        - project_path: "$BITRISE_PROJECT_PATH"
+        - scheme: "$BITRISE_SCHEME"
+        - distribution_method: "$BITRISE_DISTRIBUTION_METHOD"
+        - configuration: Release
+        - automatic_code_signing: api-key
+        - api_key_path: "$BITRISEIO_API_KEY_PATH"
+        - export_method: "$BITRISE_DISTRIBUTION_METHOD"
+
+    - deploy-to-bitrise-io@2: {}
+
+    - deploy-to-itunesconnect-application-loader@1:
+        inputs:
+        - api_key_path: "$BITRISEIO_API_KEY_PATH"
+        - api_issuer: "$APPSTORE_ISSUER_ID"
+        - itunescon_user: "$APPLE_LOGIN"
+        - password: "$APPLE_PWD"
+
+app:
+  envs:
+  - BITRISE_PROJECT_PATH: ios/App/App.xcworkspace
+    opts:
+      is_expand: false
+  - BITRISE_SCHEME: App
+    opts:
+      is_expand: false
+  - BITRISE_DISTRIBUTION_METHOD: app-store
+    opts:
+      is_expand: false
+  - BITRISEIO_API_KEY_PATH: $BITRISEIO_api_key_k27mctj9yj47_URL
+  - APPSTORE_ISSUER_ID: a6a9ffd1-182b-42bf-a0a4-49a6e15abfed
