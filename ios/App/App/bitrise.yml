@@ -32,8 +32,7 @@ workflows:
         - distribution_method: "$BITRISE_DISTRIBUTION_METHOD"
         - configuration: Release
         - automatic_code_signing: api-key
-        - api_key_path: "$BITRISEIO_API_KEY_PATH"
-        - export_method: "$BITRISE_DISTRIBUTION_METHOD"
+        - passphrase_list: "$BITRISE_CERTIFICATE_PASS"
 
     - deploy-to-bitrise-io@2: {}
 
