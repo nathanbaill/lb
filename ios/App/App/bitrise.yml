@@ -21,6 +21,7 @@ workflows:
         inputs:
         - certificate_url: "$BITRISE_CERTIFICATE_URL"
         - certificate_passphrase: "$BITRISE_CERTIFICATE_PASS"
+        - default_certificate_passphrase: "$BITRISE_CERTIFICATE_PASS"
         - provisioning_profile_url: "$BITRISE_PROVISION_URL"
         - install_defaults: "no"
 
