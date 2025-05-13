@@ -1,47 +1,80 @@
----
-format_version: '11'
+format_version: "23"
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 project_type: ios
 
 workflows:
-  build:
-    summary: "Builds and deploys the iOS app using API key authentication."
+  archive_and_export_app:
+    summary: Create an IPA file to install your app on a device or share it with your team.
+    description: The workflow will first clone your Git repository, cache and install your project's dependencies if any, export an IPA file from the project and save it.
     steps:
     - git-clone@8: {}
-
-    - restore-cocoapods-cache@1: {}
-
     - cocoapods-install@2:
         inputs:
         - is_cache_disabled: "true"
-
-    - save-cocoapods-cache@1: {}
-
     - certificate-and-profile-installer@1:
         inputs:
-        - certificate_url: "$BITRISE_CERTIFICATE_URL"
-        - certificate_passphrase: "$BITRISE_CERTIFICATE_PASS"
-        - default_certificate_passphrase: "$BITRISE_CERTIFICATE_PASS"
-        - provisioning_profile_url: "$BITRISE_PROVISION_URL"
-        - install_defaults: "no"
-
+        - certificate_passphrase: $BITRISE_CERTIFICATE_PASS
+        - certificate_url: $BITRISE_CERTIFICATE_URL
+        - provisioning_profile_url: $BITRISE_PROVISION_URL
+        - keychain_password: $BITRISE_KEYCHAIN_PASSWORD
     - xcode-archive@5:
         inputs:
-        - project_path: "$BITRISE_PROJECT_PATH"
-        - scheme: "$BITRISE_SCHEME"
-        - distribution_method: "$BITRISE_DISTRIBUTION_METHOD"
+        - project_path: $BITRISE_PROJECT_PATH
+        - scheme: $BITRISE_SCHEME
+        - distribution_method: app-store
         - configuration: Release
         - automatic_code_signing: api-key
-        - passphrase_list: "$BITRISE_CERTIFICATE_PASS"
-
+        - api_key_path: $BITRISEIO_api_key_k27mctj9yj47_URL
+        - api_key_id: K27MCTJ9YJ47
+        - api_key_issuer_id: a6a9ffd1-182b-42bf-a0a4-49a6e15abfed
     - deploy-to-bitrise-io@2: {}
 
+  build:
+    summary: Build your Xcode project.
+    description: The workflow will first clone your Git repository, cache and install your project's dependencies if any and build your project.
+    steps:
+    - git-clone@8: {}
+    - restore-cocoapods-cache@1: {}
+    - cocoapods-install@2:
+        inputs:
+        - is_cache_disabled: "true"
+    - save-cocoapods-cache@1: {}
+    - certificate-and-profile-installer@1:
+        inputs:
+        - certificate_passphrase: $BITRISE_CERTIFICATE_PASS
+        - default_certificate_passphrase: $BITRISE_CERTIFICATE_PASS
+        - default_certificate_url: $BITRISE_CERTIFICATE_URL
+        - default_provisioning_profile_url: $BITRISE_PROVISION_URL
+        - install_defaults: "no"
+        - certificate_url: $BITRISE_CERTIFICATE_URL
+        - keychain_password: $BITRISE_KEYCHAIN_PASSWORD
+    - xcode-archive@5:
+        inputs:
+        - project_path: ios/App/App.xcworkspace
+        - scheme: App
+        - distribution_method: app-store
+        - configuration: Release
+        - automatic_code_signing: api-key
+        - api_key_path: $BITRISEIO_api_key_k27mctj9yj47_URL
+        - api_key_id: K27MCTJ9YJ47
+        - api_key_issuer_id: a6a9ffd1-182b-42bf-a0a4-49a6e15abfed
     - deploy-to-itunesconnect-application-loader@1:
         inputs:
-        - api_key_path: "$BITRISEIO_API_KEY_PATH"
-        - api_issuer: "$APPSTORE_ISSUER_ID"
-        - itunescon_user: "$APPLE_LOGIN"
-        - password: "$APPLE_PWD"
+        - api_key_path: $BITRISEIO_api_key_k27mctj9yj47_URL
+        - api_issuer: K27MCTJ9YJ47
+        - itunescon_user: $APPLE_LOGIN
+        - password: $APPLE_PWD
+
+    triggers:
+      push:
+      - branch: main
+      pull_request:
+      - source_branch: '*'
+
+meta:
+  bitrise.io:
+    stack: osx-xcode-16.0.x
+    machine_type_id: g2.mac.large
 
 app:
   envs:
@@ -54,5 +87,3 @@ app:
   - BITRISE_DISTRIBUTION_METHOD: app-store
     opts:
       is_expand: false
-  - BITRISEIO_API_KEY_PATH: $BITRISEIO_api_key_k27mctj9yj47_URL
-  - APPSTORE_ISSUER_ID: a6a9ffd1-182b-42bf-a0a4-49a6e15abfed
