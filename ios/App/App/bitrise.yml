@@ -13,9 +13,9 @@ workflows:
         - is_cache_disabled: "true"
     - certificate-and-profile-installer@1:
         inputs:
-        - certificate_url: $BITRISEIO_certificatelovingbicycling_URL
+        - certificate_url: $BITRISE_CERTIFICATE_URL
         - certificate_passphrase: $BITRISE_CERTIFICATE_PASS
-        - provisioning_profile_url: $BITRISEIO_LovingBicyclingAppStore_URL
+        - provisioning_profile_url: $BITRISE_PROVISION_URL
         - keychain_password: $BITRISE_KEYCHAIN_PASSWORD
         - install_defaults: "no"
         - install_certificate_in_system_keychain: "true"
@@ -43,9 +43,9 @@ workflows:
     - save-cocoapods-cache@1: {}
     - certificate-and-profile-installer@1:
         inputs:
-        - certificate_url: $BITRISEIO_certificatelovingbicycling_URL
+        - certificate_url: $BITRISE_CERTIFICATE_URL
         - certificate_passphrase: $BITRISE_CERTIFICATE_PASS
-        - provisioning_profile_url: $BITRISEIO_LovingBicyclingAppStore_URL
+        - provisioning_profile_url: $BITRISE_PROVISION_URL
         - keychain_password: $BITRISE_KEYCHAIN_PASSWORD
         - install_defaults: "no"
         - install_certificate_in_system_keychain: "true"
