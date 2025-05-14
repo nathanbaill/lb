@@ -4,8 +4,6 @@ project_type: ios
 
 workflows:
   archive_and_export_app:
-    summary: Create an IPA file to install your app on a device or share it with your team.
-    description: The workflow will first clone your Git repository, install dependencies, export an IPA and save it.
     steps:
       - git-clone@8: {}
       - cocoapods-install@2:
@@ -13,11 +11,12 @@ workflows:
             - is_cache_disabled: "true"
       - certificate-and-profile-installer@1:
           inputs:
-            - certificate_url: $BITRISEIO_certificatelovingbicycling_URL
-            - certificate_passphrase: Motdepasse74*
-            - provisioning_profile_url: $BITRISEIO_LovingBicyclingAppStore_URL
-            - keychain_password: Motdepasse74*
+            - certificate_url: $BITRISE_CERTIFICATE_URL
+            - certificate_passphrase: $BITRISE_CERTIFICATE_PASS
+            - provisioning_profile_url: $BITRISE_PROVISION_URL
+            - keychain_password: $BITRISE_KEYCHAIN_PASSWORD
             - install_defaults: "no"
+            - install_certificate_in_system_keychain: "true"
       - xcode-archive@5:
           inputs:
             - project_path: $BITRISE_PROJECT_PATH
@@ -31,8 +30,6 @@ workflows:
       - deploy-to-bitrise-io@2: {}
 
   build:
-    summary: Build your Xcode project.
-    description: Clones repo, installs dependencies, builds app.
     steps:
       - git-clone@8: {}
       - restore-cocoapods-cache@1: {}
@@ -42,15 +39,16 @@ workflows:
       - save-cocoapods-cache@1: {}
       - certificate-and-profile-installer@1:
           inputs:
-            - certificate_url: $BITRISEIO_certificatelovingbicycling_URL
-            - certificate_passphrase: Motdepasse74*
-            - provisioning_profile_url: $BITRISEIO_LovingBicyclingAppStore_URL
-            - keychain_password: Motdepasse74*
+            - certificate_url: $BITRISE_CERTIFICATE_URL
+            - certificate_passphrase: $BITRISE_CERTIFICATE_PASS
+            - provisioning_profile_url: $BITRISE_PROVISION_URL
+            - keychain_password: $BITRISE_KEYCHAIN_PASSWORD
             - install_defaults: "no"
+            - install_certificate_in_system_keychain: "true"
       - xcode-archive@5:
           inputs:
-            - project_path: ios/App/App.xcworkspace
-            - scheme: App
+            - project_path: $BITRISE_PROJECT_PATH
+            - scheme: $BITRISE_SCHEME
             - distribution_method: app-store
             - configuration: Release
             - automatic_code_signing: api-key
